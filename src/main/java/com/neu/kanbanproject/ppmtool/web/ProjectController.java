@@ -8,17 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/project")
@@ -36,10 +30,29 @@ public class ProjectController {
         ResponseEntity<?> errorMap = mapValidationErrorService.MapValidation(result);
         if(errorMap != null)
             return errorMap;
-
         Project p1 = projectService.saveOrUpdateProject(project);
         return new ResponseEntity<Project>(p1, HttpStatus.CREATED);
     }
 
+    @GetMapping("/{projectId}")
+    public ResponseEntity<?> findProjectById(@PathVariable String projectId) {
 
+//        ResponseEntity<?> errorMap = mapValidationErrorService.MapValidation(result);
+//        if(errorMap != null)
+//            return errorMap;
+
+        Project p2 = projectService.findProjectById(projectId);
+        return new ResponseEntity<Project>(p2, HttpStatus.OK);
+    }
+    @GetMapping("projects/all")
+    public Iterable<Project> findAllProjects() {
+        return  projectService.findAllProjects();
+
+    }
+
+    @DeleteMapping ("/{projectid}")
+    public ResponseEntity<?> deleteProject(@PathVariable String projectid) {
+        projectService.deleteprojectByIdentifier(projectid.toUpperCase());
+    return new ResponseEntity<String>("project with ID "+projectid.toUpperCase()+" has been deleted",HttpStatus.OK);
+    }
 }
