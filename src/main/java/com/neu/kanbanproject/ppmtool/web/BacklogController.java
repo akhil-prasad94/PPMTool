@@ -1,6 +1,7 @@
 package com.neu.kanbanproject.ppmtool.web;
 
 
+import com.neu.kanbanproject.ppmtool.domain.Project;
 import com.neu.kanbanproject.ppmtool.domain.ProjectTask;
 import com.neu.kanbanproject.ppmtool.services.MapValidationErrorService;
 import com.neu.kanbanproject.ppmtool.services.ProjectTaskService;
@@ -51,6 +52,23 @@ public class BacklogController {
 
     }
 
+    @PatchMapping("/{backlog_id}/{pt_id}")
+    public ResponseEntity<?> updateProjectTask(@Valid @RequestBody ProjectTask projectTask , BindingResult result,
+                                               @PathVariable String backlog_id, @PathVariable String pt_id)
+    {
+        ResponseEntity<?> errorMap = mapValidationErrorService.MapValidation(result);
+        if(errorMap != null) return errorMap;
+        ProjectTask updatedProjectTask = projectTaskService.updateByProjectSequence(projectTask,backlog_id,pt_id);
+
+        return new ResponseEntity<ProjectTask>(updatedProjectTask, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{backlog_id}/{pt_id}")
+    public ResponseEntity<String> deleteProjectTask(@PathVariable String backlog_id, @PathVariable String pt_id) {
+             projectTaskService.deletePTByProjectSequence(backlog_id,pt_id);
+
+        return new ResponseEntity<String>("Prooject task with ID:" +pt_id + "was deleted successfully!", HttpStatus.OK);
+    }
 
 
 }
