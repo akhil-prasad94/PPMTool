@@ -1,12 +1,11 @@
 package com.neu.kanbanproject.ppmtool.payload;
 
 import javax.validation.constraints.NotBlank;
-
 public class LoginRequest {
 
-    @NotBlank(message = "username canot be blank!")
+    @NotBlank(message = "Username cannot be blank")
     private String username;
-    @NotBlank(message = "pswd not be blnk")
+    @NotBlank(message = "Password cannot be blank")
     private String password;
 
     public String getUsername() {

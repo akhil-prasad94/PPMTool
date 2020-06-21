@@ -1,12 +1,6 @@
 package com.neu.kanbanproject.ppmtool.payload;
 
-
-
-
-
 public class JWTSuccessResponse {
-
-
     private boolean success;
     private String token;
 
@@ -27,15 +21,15 @@ public class JWTSuccessResponse {
         return token;
     }
 
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     @Override
     public String toString() {
         return "JWTSuccessResponse{" +
                 "success=" + success +
                 ", token='" + token + '\'' +
                 '}';
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static com.neu.kanbanproject.ppmtool.security.SecurityConstants.H2_URL;
 import static com.neu.kanbanproject.ppmtool.security.SecurityConstants.SIGN_UP_URLS;
@@ -29,16 +30,17 @@ import static com.neu.kanbanproject.ppmtool.security.SecurityConstants.SIGN_UP_U
 )
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-
     @Autowired
-    private JWTAuthenticationEntryPoint unauthorizedhandler;
+    private JWTAuthenticationEntryPoint unauthorizedHandler;
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {return  new JwtAuthenticationFilter();}
+
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
 
     @Override
     protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
@@ -54,15 +56,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedhandler).and()
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .headers().frameOptions().sameOrigin() //To enable H2 Database
+                .and()
                 .authorizeRequests()
-                .antMatchers()
-                .permitAll()
+                .antMatchers(
+                        "/",
+                        "/favicon.ico",
+                        "/**/*.png",
+                        "/**/*.gif",
+                        "/**/*.svg",
+                        "/**/*.jpg",
+                        "/**/*.html",
+                        "/**/*.css",
+                        "/**/*.js"
+                ).permitAll()
                 .antMatchers(SIGN_UP_URLS).permitAll()
                 .antMatchers(H2_URL).permitAll()
                 .anyRequest().authenticated();
+
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 }
