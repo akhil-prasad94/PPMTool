@@ -25,8 +25,19 @@ public class ProjectService {
     private BacklogRepository backlogRepository;
 
     public Project saveOrUpdateProject(Project project, String username){
-        try{
 
+            if(project.getId() != null)
+            {
+                Project existingProject = projectRepository.findByProjectIdentifier(project.getProjectIdentifier());
+                if(existingProject != null && (!existingProject.getUser().getUsername().equals(username))){
+                    throw new ProjectNotFoundException("Project not found!");
+                }else if (existingProject == null) {
+                    throw new ProjectNotFoundException("Project with ID"+ project.getProjectIdentifier()+"cannot be found");
+                }
+            }
+
+
+        try{
             User user = userRepository.findByUsername(username);
             project.setUser(user);
             project.setProjectLeader(user.getUsername());
